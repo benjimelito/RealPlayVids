@@ -1,0 +1,11 @@
+{
+  "name": "realplay-video-scraper",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Outputs the most recent real play uploads to Youtube",
+  "scripts": {},
+  "dependencies": {
+    "request": "2.85.0"
+  },
+  "author": "Ben Melito"
+}
