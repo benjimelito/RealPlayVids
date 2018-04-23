@@ -13,6 +13,8 @@ const options = {
     }
 };
 
+console.log("Searching for videos posted on ", process.argv[2])
+
 // Map the channels array into an array of promises that return channel data
 let requestArray = channels.map((channel) => {
     return function() {
@@ -20,14 +22,28 @@ let requestArray = channels.map((channel) => {
         optionsForChannel.url = options.url + channel
 
         // do the GET request
-        request(options, function(res, err) {
+        request(options, function(err, res) {
             if(err) {
                 console.log(err)
             } else {
-                console.log(res);
+                let videos = JSON.parse(res.body)
+
+                //Filter the videos by date
+                let videosOnDate = videos.items.filter(function(video){
+                    return video.snippet.publishedAt.split('T')[0] == process.argv[2]
+                })
+                
+                //Return info from the filtered videos
+                videosOnDate.forEach(function(video){
+                    console.log("Title : ", video.snippet.title, " ~~~~ Url: https://www.youtube.com/watch?v=", video.id.videoId, " ~~~~ Date: ", video.snippet.publishedAt.split('T')[0])
+                })
             }
  
         });
 
     }
+})
+
+requestArray.forEach(function(func){
+    func()
 })
