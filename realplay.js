@@ -1,5 +1,5 @@
-const request = require('request');
- 
+const request = require('request')
+const fs = require('fs')
 const channels = ['UCGpGxOi8ny2gt42b0sOnE1A', 'UCiznOTH33p5OKF3GDsZYO-Q']
 const apiKey = 'AIzaSyDezJUt1hzoDg9YeHzJmZ9onLhcWlBzt30'
 
@@ -13,7 +13,8 @@ const options = {
     }
 };
 
-console.log("Searching for videos posted on ", process.argv[2])
+let chosenDate = process.argv[2]
+console.log("Searching for videos posted on ", chosenDate)
 
 // Map the channels array into an array of promises that return channel data
 let requestArray = channels.map((channel) => {
@@ -33,10 +34,34 @@ let requestArray = channels.map((channel) => {
                     return video.snippet.publishedAt.split('T')[0] == process.argv[2]
                 })
                 
-                //Return info from the filtered videos
-                videosOnDate.forEach(function(video){
-                    console.log("Title : ", video.snippet.title, " ~~~~ Url: https://www.youtube.com/watch?v=", video.id.videoId, " ~~~~ Date: ", video.snippet.publishedAt.split('T')[0])
+                //Map the videos to only include fields we want
+                let videosInfo = videosOnDate.map(function(video){
+                    return {
+                        title : video.snippet.title,
+                        url : "https://www.youtube.com/watch?v=" + video.id.videoId,
+                        date : video.snippet.publishedAt.split('T')[0]
+
+                    }
                 })
+
+                //Create a CSV out of videosOnDate
+                const replacer = (key, value) => value === null ? '' : value
+                
+                if(videosInfo.length) {
+                    const header = Object.keys(videosInfo[0])
+                    let csv = videosInfo.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+                    csv.unshift(header.join(','))
+                    csv = csv.join('\r\n')
+
+                    //Save the csv as a file
+                    let stream = fs.createWriteStream(process.argv[2] + ".csv");
+                    stream.once('open', function(fd) {
+                      stream.write(csv);
+                      stream.end();
+                    });
+
+                }
+
             }
  
         });
