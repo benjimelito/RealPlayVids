@@ -5,6 +5,7 @@
   "description": "Takes RealPlay uploads from a certain date and saves them as a CSV",
   "scripts": {},
   "dependencies": {
+    "node": "^8.1.1",
     "request": "2.85.0"
   },
   "author": "Ben Melito"
