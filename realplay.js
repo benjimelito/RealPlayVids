@@ -34,13 +34,15 @@ let requestArray = channels.map((channel) => {
                     return video.snippet.publishedAt.split('T')[0] == process.argv[2]
                 })
                 
+                console.log(videosOnDate)
+
                 //Map the videos to only include fields we want
                 let videosInfo = videosOnDate.map(function(video){
                     return {
                         title : video.snippet.title,
                         url : "https://www.youtube.com/watch?v=" + video.id.videoId,
-                        date : video.snippet.publishedAt.split('T')[0]
-
+                        date : video.snippet.publishedAt.split('T')[0],
+                        channelTitle : video.snippet.channelTitle
                     }
                 })
 
@@ -54,7 +56,7 @@ let requestArray = channels.map((channel) => {
                     csv = csv.join('\r\n')
 
                     //Save the csv as a file
-                    let stream = fs.createWriteStream(process.argv[2] + ".csv");
+                    let stream = fs.createWriteStream(videosInfo[0].channelTitle + ": " + process.argv[2] + ".csv");
                     stream.once('open', function(fd) {
                       stream.write(csv);
                       stream.end();
