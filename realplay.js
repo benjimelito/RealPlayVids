@@ -13,8 +13,9 @@ const options = {
     }
 };
 
-let chosenDate = process.argv[2]
-console.log("Searching for videos posted on ", chosenDate)
+// let chosenDate = process.argv[2]
+// console.log("Searching for videos posted on ", chosenDate)
+console.log("Searching for all videos")
 
 // Map the channels array into an array of promises that return channel data
 let requestArray = channels.map((channel) => {
@@ -27,17 +28,18 @@ let requestArray = channels.map((channel) => {
             if(err) {
                 console.log(err)
             } else {
+                
                 let videos = JSON.parse(res.body)
 
                 //Filter the videos by date
-                let videosOnDate = videos.items.filter(function(video){
-                    return video.snippet.publishedAt.split('T')[0] == process.argv[2]
-                })
+                // let videosOnDate = videos.items.filter(function(video){
+                //     return video.snippet.publishedAt.split('T')[0] == chosenDate
+                // })
                 
-                console.log(videosOnDate)
+                // console.log(videosOnDate)
 
                 //Map the videos to only include fields we want
-                let videosInfo = videosOnDate.map(function(video){
+                let videosInfo = videos.items.map(function(video){
                     return {
                         title : video.snippet.title,
                         url : "https://www.youtube.com/watch?v=" + video.id.videoId,
@@ -56,7 +58,8 @@ let requestArray = channels.map((channel) => {
                     csv = csv.join('\r\n')
 
                     //Save the csv as a file
-                    let stream = fs.createWriteStream(videosInfo[0].channelTitle + ": " + process.argv[2] + ".csv");
+                    // let stream = fs.createWriteStream(videosInfo[0].channelTitle + ": " + process.argv[2] + ".csv");
+                    let stream = fs.createWriteStream("AllVideos" + ".csv");
                     stream.once('open', function(fd) {
                       stream.write(csv);
                       stream.end();
